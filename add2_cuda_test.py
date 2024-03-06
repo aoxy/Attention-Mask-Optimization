@@ -3,6 +3,9 @@ import torch
 import numpy as np
 from torch.utils.cpp_extension import load
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # c = a + b (shape: [n])
 n = 1024 * 1024
 a = torch.rand(n, device="cuda:0")

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <torch/extension.h>
 #include "add2.h"
 
@@ -5,6 +6,7 @@ void torch_launch_add2(torch::Tensor &c,
                        const torch::Tensor &a,
                        const torch::Tensor &b,
                        int64_t n) {
+    std::cout << c.sizes() <<std::endl;
     launch_add2((float *)c.data_ptr(),
                 (const float *)a.data_ptr(),
                 (const float *)b.data_ptr(),
