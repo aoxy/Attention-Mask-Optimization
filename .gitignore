@@ -1,1 +1,5 @@
 *.lprof
+*.qdrep
+fused_scale_mask_softmax
+*.sqlite
+fused_scale_mask_softmax_native

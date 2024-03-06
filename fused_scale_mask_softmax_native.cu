@@ -1578,7 +1578,6 @@ struct BroadcastMaskSoftmaxParams {
 
 struct ElementwiseMaskSoftmaxParams {
     int64_t row_size;
-    int64_t col_size;
     float fill;
     float scale;
 };
@@ -1631,21 +1630,15 @@ struct ElementwiseScaleMaskLoad {
     __device__ void load(DST* dst, int64_t row, int64_t col) {
         Pack<SRC, N> pack;
         const int64_t offset = (row * param.row_size + col) / N;
-        const int64_t S2 = param.row_size * param.row_size;
         pack.storage = *(reinterpret_cast<const PackType<SRC, N>*>(src) + offset);
         Pack<int8_t, N> mask_pack;
         mask_pack.storage = *(reinterpret_cast<const PackType<MASK, N>*>(mask) + offset);
 #pragma unroll
         for (int i = 0; i < N; ++i) {
-            int real_i = offset + i;
-            // int mat_idx = real_i/S2;
-            int base_i = real_i % S2;
-            int x = base_i / param.row_size;
-            int y = base_i % param.row_size;
-            if (x < y) {
+            if (mask_pack.elem[i] == 0) {
                 dst[i] = static_cast<DST>(param.fill);
             } else {
-                dst[i] = static_cast<DST>(pack.elem[i]);
+                dst[i] = static_cast<DST>(pack.elem[i]) * static_cast<DST>(param.scale);
             }
         }
     }
@@ -1804,7 +1797,6 @@ void LaunchElementwiseForwardKernel(cudaStream_t stream,
                                     const float scale) {
     ElementwiseMaskSoftmaxParams params;
     params.row_size = cols;
-    params.col_size = rows;
     params.fill = fill;
     params.scale = scale;
     ElementwiseScaleMaskLoad<T, ComputeType, MASK> load(x, mask, params);
@@ -1830,7 +1822,19 @@ int main() {
     float* y_host = (float*)malloc(N * sizeof(float));
     float* y_device;
     cudaMalloc((void**)&y_device, N * sizeof(float));
-    bool* mask_device = nullptr;
+
+    bool* mask_host = (bool*)malloc(N * sizeof(bool));
+    bool* mask_device;
+    cudaMalloc((void**)&mask_device, N * sizeof(bool));
+    int seq_len2 = seq_length * seq_length;
+    for (int i = 0; i < N; i++) {
+        // int mat_idx = i / seq_len2;
+        int base_i = i % seq_len2;
+        int x = base_i / seq_length;
+        int y = base_i % seq_length;
+        mask_host[i] = (x >= y);
+    }
+    cudaMemcpy(mask_device, mask_host, N * sizeof(bool), cudaMemcpyHostToDevice);
     const float mask_fill_value = -10000.0;
     const float scale_value = 1.0;
     const int64_t cols = seq_length;
@@ -1869,6 +1873,8 @@ int main() {
     }
     cudaFree(x_device);
     cudaFree(y_device);
+    cudaFree(mask_device);
     free(y_host);
+    free(mask_host);
     return 0;
 }
