@@ -3,17 +3,16 @@
 #include "fused_grouped_tril_mask_softmax.h"
 
 torch::Tensor& torch_launch_fused_grouped_tril_mask_softmax(torch::Tensor &attn,
+                       torch::Tensor &result,
                        const torch::Tensor &seq_lens) {
-    std::cout << attn.sizes() <<std::endl;
-    std::cout << seq_lens.dtype() <<std::endl;
     const int64_t batch_size = attn.sizes()[0];
     const int64_t num_heads = attn.sizes()[1];
     const int64_t seq_length = attn.sizes()[2];
-    
     fused_grouped_tril_mask_softmax((float *)attn.data_ptr(),
-                (const int64_t *)seq_lens.data_ptr(),
-                batch_size, num_heads, seq_length);
-    return attn;
+                                    (float *)result.data_ptr(),
+                                    (const int64_t *)seq_lens.data_ptr(),
+                                    batch_size, num_heads, seq_length);
+    return result;
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
