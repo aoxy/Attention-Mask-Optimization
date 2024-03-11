@@ -89,7 +89,6 @@ void fused_grouped_tril_mask_softmax(float* attn,
                                      const int64_t batch_size,
                                      const int64_t num_heads,
                                      const int64_t seq_length) {
-    const int N = batch_size * num_heads * seq_length * seq_length;
     const int64_t batch_rows = num_heads * seq_length;
     const int64_t rows = batch_size * batch_rows;
     const int64_t cols = seq_length;
