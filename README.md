@@ -1,5 +1,8 @@
 # Fused grouped tril mask softmax
 
+- C++接口 [fused_grouped_tril_mask_softmax_ops.cpp](fused_grouped_tril_mask_softmax_ops.cpp)
+- Python接口 [fused_grouped_tril_mask_softmax_test.py](fused_grouped_tril_mask_softmax_test.py)
+
 ## 性能测试结果（相对于pytorch实现）X.shape = [B, M, S, S]
 
 ### DevCloud上（B = 3, S = 1000, H = 8, M = 64）加速 5.67 倍，耗时11.7毫秒
