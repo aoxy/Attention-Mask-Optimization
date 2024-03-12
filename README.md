@@ -1,10 +1,34 @@
 # Fused grouped tril mask softmax
 
-## 性能测试结果（相对于pytorch实现）
+## 性能测试结果（相对于pytorch实现）X.shape = [B, M, S, S]
 
-### DevCloud上（B = 3, S = 1000, H = 8, M = 64）加速 5.22 倍
+### DevCloud上（B = 3, S = 1000, H = 8, M = 64）加速 5.22 倍，耗时11毫秒
 
-### A10物理机上（B = 12, S = 1000, H = 8, M = 64）加速 4.54 倍
+```text
+Running cuda...
+Cuda time:  11169.052us
+Running torch...
+Torch time:  67365.193us
+================================= RESULT =================================
+Maximum error value = tensor(1.1921e-07, device='cuda:0')
+CUDA Speedup = 6.03x
+Kernel test passed.
+==========================================================================
+```
+
+### A10物理机上（B = 12, S = 1000, H = 8, M = 64）加速 4.54 倍，耗时16毫秒
+
+```text
+Running cuda...
+Cuda time:  16315.532us
+Running torch...
+Torch time:  74056.602us
+================================= RESULT =================================
+Maximum error value = tensor(0.0017, device='cuda:0')
+CUDA Speedup = 4.54x
+Kernel test passed.
+==========================================================================
+```
 
 ## 实现思路
 
