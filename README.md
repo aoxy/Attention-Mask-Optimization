@@ -2,21 +2,21 @@
 
 ## 性能测试结果（相对于pytorch实现）X.shape = [B, M, S, S]
 
-### DevCloud上（B = 3, S = 1000, H = 8, M = 64）加速 5.22 倍，耗时11毫秒
+### DevCloud上（B = 3, S = 1000, H = 8, M = 64）加速 5.67 倍，耗时11.7毫秒
 
 ```text
 Running cuda...
-Cuda time:  11169.052us
+Cuda time:  11700.296us
 Running torch...
-Torch time:  67365.193us
+Torch time:  66341.925us
 ================================= RESULT =================================
 Maximum error value = tensor(1.1921e-07, device='cuda:0')
-CUDA Speedup = 6.03x
+CUDA Speedup = 5.67x
 Kernel test passed.
 ==========================================================================
 ```
 
-### A10物理机上（B = 12, S = 1000, H = 8, M = 64）加速 4.54 倍，耗时16毫秒
+### A10物理机上（B = 12, S = 1000, H = 8, M = 64）加速 4.54 倍，耗时16.3毫秒
 
 ```text
 Running cuda...
@@ -26,6 +26,20 @@ Torch time:  74056.602us
 ================================= RESULT =================================
 Maximum error value = tensor(0.0017, device='cuda:0')
 CUDA Speedup = 4.54x
+Kernel test passed.
+==========================================================================
+```
+
+### A10物理机上（B = 3, S = 1000, H = 8, M = 64）加速 4.59 倍，耗时4.0毫秒
+
+```text
+Running cuda...
+Cuda time:  4012.561us
+Running torch...
+Torch time:  18420.815us
+================================= RESULT =================================
+Maximum error value = tensor(0.0023, device='cuda:0')
+CUDA Speedup = 4.59x
 Kernel test passed.
 ==========================================================================
 ```
